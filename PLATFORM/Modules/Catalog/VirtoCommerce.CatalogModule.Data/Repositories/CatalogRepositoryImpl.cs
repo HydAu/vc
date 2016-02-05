@@ -9,6 +9,7 @@ using System.Data.Entity.ModelConfiguration.Conventions;
 using System;
 using System.Text;
 using System.Diagnostics;
+using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Data.Repositories
 {
@@ -228,15 +229,19 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         public string[] GetAllChildrenCategoriesIds(string[] categoryIds)
         {
-            const string queryPattern =
-                @"WITH cte AS  ( SELECT a.Id FROM Category a  WHERE Id IN ({0})
+            var retVal = new List<string>();
+            if (!categoryIds.IsNullOrEmpty())
+            {
+                const string queryPattern =
+                    @"WITH cte AS  ( SELECT a.Id FROM Category a  WHERE Id IN ({0})
                   UNION ALL
                   SELECT a.Id FROM Category a JOIN cte c ON a.ParentCategoryId = c.Id)
                   SELECT Id FROM cte WHERE Id NOT IN ({0})";
 
-            var query = String.Format(queryPattern, String.Join(", ", categoryIds.Select(x => String.Format("'{0}'", x))));
-            var retVal = ObjectContext.ExecuteStoreQuery<string>(query).ToArray();
-            return retVal;
+                var query = String.Format(queryPattern, String.Join(", ", categoryIds.Select(x => String.Format("'{0}'", x))));
+                retVal = ObjectContext.ExecuteStoreQuery<string>(query).ToList();
+            }
+            return retVal.ToArray();
         }
 
         public dataModel.Category[] GetCategoriesByIds(string[] categoriesIds, coreModel.CategoryResponseGroup respGroup)

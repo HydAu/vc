@@ -98,8 +98,11 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                         searchCategoryIds = searchCategoryIds.Concat(allCatalogLinkedCategories).Distinct().ToArray();
                         //Then exapand all categories, get all childrens
                         searchCategoryIds = searchCategoryIds.Concat(repository.GetAllChildrenCategoriesIds(searchCategoryIds)).ToArray();
-                        //find all categories belong searched catalogs and all categories direct or implicitly linked to catalogs
-                        query = query.Where(x =>  searchCategoryIds.Contains(x.Id));
+                        if (!searchCategoryIds.IsNullOrEmpty())
+                        {
+                            //find all categories belong searched catalogs and all categories direct or implicitly linked to catalogs
+                            query = query.Where(x => searchCategoryIds.Contains(x.Id));
+                        }
                     }
                     else
                     {
