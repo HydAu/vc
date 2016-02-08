@@ -161,6 +161,7 @@ $RECYCLE.BIN/
 /STOREFRONT/VirtoCommerce.Storefront/App_Data/Themes/*
 /STOREFRONT/VirtoCommerce.Storefront/App_Data/Pages/*
 !/STOREFRONT/VirtoCommerce.Storefront/App_Data/Themes/default/*
+!/STOREFRONT/VirtoCommerce.Storefront/App_Data/Themes/marketplace/*
 .vs/
 /PLATFORM/VirtoCommerce.Platform.Web/client_packages
 /PLATFORM/VirtoCommerce.Platform.Web/node_modules
