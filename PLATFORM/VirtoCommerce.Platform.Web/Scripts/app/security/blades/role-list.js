@@ -1,7 +1,7 @@
 ﻿angular.module('platformWebApp')
-.controller('platformWebApp.roleListController', ['$scope', 'platformWebApp.roles', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'uiGridConstants', 'platformWebApp.uiGridHelper',
-function ($scope, roles, bladeNavigationService, dialogService, uiGridConstants, uiGridHelper) {
-    $scope.uiGridConstants = uiGridConstants;
+.controller('platformWebApp.roleListController', ['$scope', 'platformWebApp.roles', 'platformWebApp.bladeUtils', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'platformWebApp.uiGridHelper',
+function ($scope, roles, bladeUtils, bladeNavigationService, dialogService, uiGridHelper) {
+    $scope.uiGridConstants = uiGridHelper.uiGridConstants;
     var blade = $scope.blade;
 
     blade.refresh = function () {
@@ -9,6 +9,7 @@ function ($scope, roles, bladeNavigationService, dialogService, uiGridConstants,
 
         roles.search({
             keyword: filter.keyword,
+            sort: uiGridHelper.getSortExpression($scope),
             skipCount: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
             takeCount: $scope.pageSettings.itemsPerPageCount
         }, function (data) {
@@ -72,9 +73,7 @@ function ($scope, roles, bladeNavigationService, dialogService, uiGridConstants,
     blade.toolbarCommands = [
         {
             name: "platform.commands.refresh", icon: 'fa fa-refresh',
-            executeMethod: function () {
-                blade.refresh();
-            },
+            executeMethod: blade.refresh,
             canExecuteMethod: function () {
                 return true;
             }
@@ -109,12 +108,6 @@ function ($scope, roles, bladeNavigationService, dialogService, uiGridConstants,
         }
     ];
 
-    //pagination settings
-    $scope.pageSettings = {};
-    $scope.pageSettings.totalItems = 0;
-    $scope.pageSettings.currentPage = 1;
-    $scope.pageSettings.numPages = 5;
-    $scope.pageSettings.itemsPerPageCount = 20;
 
     var filter = $scope.filter = {};
     filter.criteriaChanged = function () {
@@ -127,10 +120,12 @@ function ($scope, roles, bladeNavigationService, dialogService, uiGridConstants,
 
     // ui-grid
     $scope.setGridOptions = function (gridOptions) {
-        uiGridHelper.initialize($scope, gridOptions);
+        uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
+            uiGridHelper.bindRefreshOnSortChanged($scope);
+        });
+        bladeUtils.initializePagination($scope);
     };
 
-    $scope.$watch('pageSettings.currentPage', blade.refresh);
 
     // actions on load
     //No need to call this because page 'pageSettings.currentPage' is watched!!! It would trigger subsequent duplicated req...

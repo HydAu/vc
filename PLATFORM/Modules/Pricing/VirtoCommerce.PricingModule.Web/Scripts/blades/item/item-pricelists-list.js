@@ -30,25 +30,11 @@
         bladeNavigationService.showBlade(newBlade, blade);
     }
 
-    blade.onClose = function (closeCallback) {
-        closeChildrenBlades();
-        closeCallback();
-    };
-
-    function closeChildrenBlades() {
-        angular.forEach(blade.childrenBlades.slice(), function (child) {
-            bladeNavigationService.closeBlade(child);
-        });
-    }
-
     blade.headIcon = 'fa-usd';
-
     blade.toolbarCommands = [
         {
             name: "platform.commands.refresh", icon: 'fa fa-refresh',
-            executeMethod: function () {
-                blade.refresh();
-            },
+            executeMethod: blade.refresh,
             canExecuteMethod: function () {
                 return true;
             }

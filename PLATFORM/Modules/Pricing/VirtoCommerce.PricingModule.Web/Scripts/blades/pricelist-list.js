@@ -1,12 +1,17 @@
 ﻿angular.module('virtoCommerce.pricingModule')
-.controller('virtoCommerce.pricingModule.pricelistListController', ['$scope', 'virtoCommerce.pricingModule.pricelists', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'uiGridConstants', 'platformWebApp.uiGridHelper',
-function ($scope, pricelists, bladeNavigationService, dialogService, uiGridConstants, uiGridHelper) {
+.controller('virtoCommerce.pricingModule.pricelistListController', ['$scope', 'virtoCommerce.pricingModule.pricelists', 'platformWebApp.dialogService', 'platformWebApp.uiGridHelper', 'platformWebApp.bladeUtils',
+function ($scope, pricelists, dialogService, uiGridHelper, bladeUtils) {
     var blade = $scope.blade;
+    var bladeNavigationService = bladeUtils.bladeNavigationService;
 
     blade.refresh = function () {
         blade.isLoading = true;
 
-        pricelists.query({}, function (data) {
+        pricelists.query({
+            sort: uiGridHelper.getSortExpression($scope),
+            skip: ($scope.pageSettings.currentPage - 1) * $scope.pageSettings.itemsPerPageCount,
+            take: $scope.pageSettings.itemsPerPageCount
+        }, function (data) {
             blade.isLoading = false;
             blade.currentEntities = data;
         }, function (error) {
@@ -66,9 +71,7 @@ function ($scope, pricelists, bladeNavigationService, dialogService, uiGridConst
     blade.toolbarCommands = [
         {
             name: "platform.commands.refresh", icon: 'fa fa-refresh',
-            executeMethod: function () {
-                blade.refresh();
-            },
+            executeMethod: blade.refresh,
             canExecuteMethod: function () {
                 return true;
             }
@@ -114,9 +117,13 @@ function ($scope, pricelists, bladeNavigationService, dialogService, uiGridConst
 
     // ui-grid
     $scope.setGridOptions = function (gridOptions) {
-        uiGridHelper.initialize($scope, gridOptions);
+        uiGridHelper.initialize($scope, gridOptions, function (gridApi) {
+            uiGridHelper.bindRefreshOnSortChanged($scope);
+        });
+
+        bladeUtils.initializePagination($scope);
     };
-    
+
     // actions on load
-    blade.refresh();
+    //blade.refresh();
 }]);

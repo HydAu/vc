@@ -1,68 +1,45 @@
 ﻿angular.module('virtoCommerce.coreModule.fulfillment')
 .controller('virtoCommerce.coreModule.fulfillment.fulfillmentListController', ['$scope', 'virtoCommerce.coreModule.fulfillment.fulfillments', 'platformWebApp.bladeNavigationService',
 function ($scope, fulfillments, bladeNavigationService) {
-    var selectedNode = null;
-
-    $scope.blade.refresh = function () {
-        $scope.blade.isLoading = true;
+    var blade = $scope.blade;
+    
+    blade.refresh = function () {
+        blade.isLoading = true;
 
         fulfillments.query({}, function (results) {
-            $scope.blade.isLoading = false;
-            $scope.blade.currentEntities = results;
-
-            if (selectedNode != null) {
-                //select the node in the new list
-                angular.forEach(results, function (node) {
-                    if (selectedNode.id === node.id) {
-                        selectedNode = node;
-                    }
-                });
-            }
-
+            blade.isLoading = false;
+            blade.currentEntities = results;
+            
             return results;
         }, function (error) {
-            bladeNavigationService.setError('Error ' + error.status, $scope.blade);
+            bladeNavigationService.setError('Error ' + error.status, blade);
         });
     };
 
     function showDetailBlade(node, title) {
-        selectedNode = node;
-        $scope.selectedNodeId = selectedNode.id;
+        $scope.selectedNodeId = node.id;
 
         var newBlade = {
             id: 'fulfillmentDetail',
-            currentEntityId: selectedNode.id,
-            currentEntity: selectedNode,
+            currentEntityId: node.id,
+            currentEntity: node,
             title: title,
             subtitle: 'core.blades.fulfillment-center-detail.subtitle',
             controller: 'virtoCommerce.coreModule.fulfillment.fulfillmentCenterDetailController',
             template: 'Modules/$(VirtoCommerce.Core)/Scripts/fulfillment/blades/fulfillment-center-detail.tpl.html'
         };
-        bladeNavigationService.showBlade(newBlade, $scope.blade);
+        bladeNavigationService.showBlade(newBlade, blade);
     };
 
     $scope.selectNode = function (node) {
         showDetailBlade(node, node.name);
     };
 
-    $scope.blade.onClose = function (closeCallback) {
-      closeChildrenBlades();
-      closeCallback();
-    };
-
-    function closeChildrenBlades() {
-        angular.forEach($scope.blade.childrenBlades.slice(), function (child) {
-            bladeNavigationService.closeBlade(child);
-            });
-    }
-
-    $scope.blade.headIcon = 'fa-wrench';
-    $scope.blade.toolbarCommands = [
+    blade.headIcon = 'fa-wrench';
+    blade.toolbarCommands = [
       {
           name: "platform.commands.refresh", icon: 'fa fa-refresh',
-          executeMethod: function () {
-              $scope.blade.refresh();
-          },
+          executeMethod: blade.refresh,
           canExecuteMethod: function () {
               return true;
           }
@@ -80,7 +57,7 @@ function ($scope, fulfillments, bladeNavigationService) {
     ];
 
     // actions on load
-    $scope.blade.title = 'core.blades.fulfillment-center-list.title',
-    $scope.blade.subtitle = 'core.blades.fulfillment-center-list.subtitle',
-    $scope.blade.refresh();
+    blade.title = 'core.blades.fulfillment-center-list.title',
+    blade.subtitle = 'core.blades.fulfillment-center-list.subtitle',
+    blade.refresh();
 }]);

@@ -1,5 +1,5 @@
 ﻿angular.module('virtoCommerce.pricingModule')
-.controller('virtoCommerce.pricingModule.assignmentDetailController', ['$scope', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.pricingModule.pricelists', 'virtoCommerce.pricingModule.pricelistAssignments', 'platformWebApp.dialogService', 'platformWebApp.bladeNavigationService', 'virtoCommerce.coreModule.common.dynamicExpressionService', function ($scope, catalogs, pricelists, assignments, dialogService, bladeNavigationService, dynamicExpressionService) {
+.controller('virtoCommerce.pricingModule.assignmentDetailController', ['$scope', 'virtoCommerce.catalogModule.catalogs', 'virtoCommerce.pricingModule.pricelists', 'virtoCommerce.pricingModule.pricelistAssignments', 'platformWebApp.bladeNavigationService', 'virtoCommerce.coreModule.common.dynamicExpressionService', function ($scope, catalogs, pricelists, assignments, bladeNavigationService, dynamicExpressionService) {
     var blade = $scope.blade;
 
     blade.refresh = function (parentRefresh) {
@@ -26,12 +26,8 @@
                 {
                     name: "platform.commands.save",
                     icon: 'fa fa-save',
-                    executeMethod: function () {
-                        $scope.saveChanges();
-                    },
-                    canExecuteMethod: function () {
-                        return isDirty() && $scope.formScope && $scope.formScope.$valid;
-                    },
+                    executeMethod: $scope.saveChanges,
+                    canExecuteMethod: canSave,
                     permission: 'pricing:update'
                 },
                 {
@@ -40,31 +36,27 @@
                     executeMethod: function () {
                         angular.copy(blade.origEntity, blade.currentEntity);
                     },
-                    canExecuteMethod: function () {
-                        return isDirty();
-                    },
+                    canExecuteMethod: isDirty,
                     permission: 'pricing:update'
                 }
             ];
         }
-    };
+    }
 
     function isDirty() {
         return !angular.equals(blade.currentEntity, blade.origEntity);
-    };
-
-    $scope.setForm = function (form) {
-        $scope.formScope = form;
     }
+
+    function canSave() {
+        return isDirty() && $scope.formScope && $scope.formScope.$valid;
+    }
+
+    $scope.setForm = function (form) { $scope.formScope = form; };
 
     $scope.cancelChanges = function () {
         $scope.bladeClose();
-    }
-
-    //$scope.isValid = function () {
-    //    return $scope.formScope && $scope.formScope.$valid;
-    //}
-
+    };
+    
     $scope.saveChanges = function () {
         if (blade.isNew) {
             blade.isLoading = true;
@@ -92,23 +84,7 @@
     };
 
     blade.onClose = function (closeCallback) {
-        if (isDirty()) {
-            var dialog = {
-                id: "confirmCurrentBladeClose",
-                title: "pricing.dialogs.assignment-save.title",
-                message: "pricing.dialogs.assignment-save.message",
-                callback: function (needSave) {
-                    if (needSave) {
-                        $scope.saveChanges();
-                    }
-                    closeCallback();
-                }
-            }
-            dialogService.showConfirmationDialog(dialog);
-        }
-        else {
-            closeCallback();
-        }
+        bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, $scope.saveChanges, closeCallback, "pricing.dialogs.assignment-save.title", "pricing.dialogs.assignment-save.message");
     };
 
     blade.headIcon = blade.parentBlade.headIcon;

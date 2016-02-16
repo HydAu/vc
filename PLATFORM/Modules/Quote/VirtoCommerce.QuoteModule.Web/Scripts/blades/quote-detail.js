@@ -31,7 +31,11 @@
         }
 
         function isDirty() {
-            return !angular.equals(blade.currentEntity, blade.origEntity);
+            return !angular.equals(blade.currentEntity, blade.origEntity) // && permission;
+        }
+
+        function canSave() {
+            return isDirty() && $scope.formScope && $scope.formScope.$valid && !blade.isLocked();
         }
 
         function saveChanges() {
@@ -97,25 +101,7 @@
         }
 
         blade.onClose = function (closeCallback) {
-            bladeNavigationService.closeChildrenBlades(blade, function () {
-                if (isDirty() && !blade.isLocked()) {
-                    var dialog = {
-                        id: "confirmCurrentBladeClose",
-                        title: "quotes.dialogs.quote-save.title",
-                        message: "quotes.dialogs.quote-save.message",
-                    };
-                    dialog.callback = function (needSave) {
-                        if (needSave) {
-                            saveChanges();
-                        }
-                        closeCallback();
-                    };
-                    dialogService.showConfirmationDialog(dialog);
-                }
-                else {
-                    closeCallback();
-                }
-            });
+            bladeNavigationService.showConfirmationIfNeeded(isDirty(), canSave(), blade, saveChanges, closeCallback, "quotes.dialogs.quote-save.title", "quotes.dialogs.quote-save.message");
         };
 
         blade.isLocked = function () {
@@ -154,12 +140,8 @@
             {
                 name: "platform.commands.save",
                 icon: 'fa fa-save',
-                executeMethod: function () {
-                    saveChanges();
-                },
-                canExecuteMethod: function () {
-                    return isDirty() && $scope.formScope && $scope.formScope.$valid && !blade.isLocked();
-                },
+                executeMethod: saveChanges,
+                canExecuteMethod: canSave,
                 permission: 'quote:update'
             },
             {
@@ -169,9 +151,7 @@
                     angular.copy(blade.origEntity, blade.currentEntity);
                     onHoldCommand.updateName();
                 },
-                canExecuteMethod: function () {
-                    return isDirty();
-                },
+                canExecuteMethod: isDirty,
                 permission: 'quote:update'
             },
             {
@@ -219,12 +199,8 @@
             },
             {
                 name: "platform.commands.delete", icon: 'fa fa-trash-o',
-                executeMethod: function () {
-                    deleteEntry();
-                },
-                canExecuteMethod: function () {
-                    return !isDirty();
-                },
+                executeMethod: deleteEntry,
+                canExecuteMethod: function () { return true; },
                 permission: 'quote:delete'
             }
         ];

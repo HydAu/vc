@@ -59,9 +59,7 @@
         $scope.currentChild = childType;
     }
 
-    $scope.setForm = function (form) {
-        $scope.formScope = form;
-    }
+    $scope.setForm = function (form) { $scope.formScope = form; }
 
     function isDirty() {
         return !angular.equals(blade.currentEntity, blade.origEntity);
@@ -133,18 +131,14 @@
             executeMethod: function () {
                 angular.copy(blade.origEntity, blade.currentEntity);
             },
-            canExecuteMethod: function () {
-                return isDirty();
-            },
+            canExecuteMethod: isDirty,
             permission: 'platform:dynamic_properties:update'
         },
         {
             name: "platform.commands.delete", icon: 'fa fa-trash-o',
-            executeMethod: function () {
-                deleteEntry();
-            },
+            executeMethod: deleteEntry,
             canExecuteMethod: function () {
-                return !isDirty() && !blade.isNew;
+                return !blade.isNew;
             },
             permission: 'platform:dynamic_properties:delete'
         }
