@@ -174,6 +174,46 @@ namespace VirtoCommerce.Client.Api
         System.Threading.Tasks.Task<ApiResponse<Object>> StoreModuleDeleteAsyncWithHttpInfo (List<string> ids);
         
         /// <summary>
+        /// Returns list of stores which user can sign in
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="userId"></param>
+        /// <returns>List&lt;string&gt;</returns>
+        List<string> StoreModuleGetUserAllowedStores (string userId);
+  
+        /// <summary>
+        /// Returns list of stores which user can sign in
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="userId"></param>
+        /// <returns>ApiResponse of List&lt;string&gt;</returns>
+        ApiResponse<List<string>> StoreModuleGetUserAllowedStoresWithHttpInfo (string userId);
+
+        /// <summary>
+        /// Returns list of stores which user can sign in
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="userId"></param>
+        /// <returns>Task of List&lt;string&gt;</returns>
+        System.Threading.Tasks.Task<List<string>> StoreModuleGetUserAllowedStoresAsync (string userId);
+
+        /// <summary>
+        /// Returns list of stores which user can sign in
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="userId"></param>
+        /// <returns>Task of ApiResponse (List&lt;string&gt;)</returns>
+        System.Threading.Tasks.Task<ApiResponse<List<string>>> StoreModuleGetUserAllowedStoresAsyncWithHttpInfo (string userId);
+        
+        /// <summary>
         /// Search stores
         /// </summary>
         /// <remarks>
@@ -292,6 +332,50 @@ namespace VirtoCommerce.Client.Api
         /// <param name="id">Store id</param>
         /// <returns>Task of ApiResponse (VirtoCommerceStoreModuleWebModelStore)</returns>
         System.Threading.Tasks.Task<ApiResponse<VirtoCommerceStoreModuleWebModelStore>> StoreModuleGetStoreByIdAsyncWithHttpInfo (string id);
+        
+        /// <summary>
+        /// Check if given contact has login on behalf permission
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="storeId">Store ID</param>
+        /// <param name="id">Contact ID</param>
+        /// <returns>VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo</returns>
+        VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo StoreModuleGetLoginOnBehalfInfo (string storeId, string id);
+  
+        /// <summary>
+        /// Check if given contact has login on behalf permission
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="storeId">Store ID</param>
+        /// <param name="id">Contact ID</param>
+        /// <returns>ApiResponse of VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo</returns>
+        ApiResponse<VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo> StoreModuleGetLoginOnBehalfInfoWithHttpInfo (string storeId, string id);
+
+        /// <summary>
+        /// Check if given contact has login on behalf permission
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="storeId">Store ID</param>
+        /// <param name="id">Contact ID</param>
+        /// <returns>Task of VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo</returns>
+        System.Threading.Tasks.Task<VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo> StoreModuleGetLoginOnBehalfInfoAsync (string storeId, string id);
+
+        /// <summary>
+        /// Check if given contact has login on behalf permission
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        /// <param name="storeId">Store ID</param>
+        /// <param name="id">Contact ID</param>
+        /// <returns>Task of ApiResponse (VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo)</returns>
+        System.Threading.Tasks.Task<ApiResponse<VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo>> StoreModuleGetLoginOnBehalfInfoAsyncWithHttpInfo (string storeId, string id);
         
     }
   
@@ -971,6 +1055,159 @@ namespace VirtoCommerce.Client.Api
         }
         
         /// <summary>
+        /// Returns list of stores which user can sign in 
+        /// </summary>
+        /// <param name="userId"></param> 
+        /// <returns>List&lt;string&gt;</returns>
+        public List<string> StoreModuleGetUserAllowedStores (string userId)
+        {
+             ApiResponse<List<string>> response = StoreModuleGetUserAllowedStoresWithHttpInfo(userId);
+             return response.Data;
+        }
+
+        /// <summary>
+        /// Returns list of stores which user can sign in 
+        /// </summary>
+        /// <param name="userId"></param> 
+        /// <returns>ApiResponse of List&lt;string&gt;</returns>
+        public ApiResponse< List<string> > StoreModuleGetUserAllowedStoresWithHttpInfo (string userId)
+        {
+            
+            // verify the required parameter 'userId' is set
+            if (userId == null)
+                throw new ApiException(400, "Missing required parameter 'userId' when calling StoreModuleApi->StoreModuleGetUserAllowedStores");
+            
+    
+            var path_ = "/api/stores/allowed/{userId}";
+    
+            var pathParams = new Dictionary<String, String>();
+            var queryParams = new Dictionary<String, String>();
+            var headerParams = new Dictionary<String, String>(Configuration.DefaultHeader);
+            var formParams = new Dictionary<String, String>();
+            var fileParams = new Dictionary<String, FileParameter>();
+            Object postBody = null;
+
+            // to determine the Content-Type header
+            String[] httpContentTypes = new String[] {
+                
+            };
+            String httpContentType = Configuration.ApiClient.SelectHeaderContentType(httpContentTypes);
+
+            // to determine the Accept header
+            String[] httpHeaderAccepts = new String[] {
+                "application/json", "text/json"
+            };
+            String httpHeaderAccept = Configuration.ApiClient.SelectHeaderAccept(httpHeaderAccepts);
+            if (httpHeaderAccept != null)
+                headerParams.Add("Accept", httpHeaderAccept);
+
+            // set "format" to json by default
+            // e.g. /pet/{petId}.{format} becomes /pet/{petId}.json
+            pathParams.Add("format", "json");
+            if (userId != null) pathParams.Add("userId", Configuration.ApiClient.ParameterToString(userId)); // path parameter
+            
+            
+            
+            
+            
+
+            
+    
+            // make the HTTP request
+            IRestResponse response = (IRestResponse) Configuration.ApiClient.CallApi(path_, 
+                Method.GET, queryParams, postBody, headerParams, formParams, fileParams,
+                pathParams, httpContentType);
+
+            int statusCode = (int) response.StatusCode;
+    
+            if (statusCode >= 400)
+                throw new ApiException (statusCode, "Error calling StoreModuleGetUserAllowedStores: " + response.Content, response.Content);
+            else if (statusCode == 0)
+                throw new ApiException (statusCode, "Error calling StoreModuleGetUserAllowedStores: " + response.ErrorMessage, response.ErrorMessage);
+    
+            return new ApiResponse<List<string>>(statusCode,
+                response.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
+                (List<string>) Configuration.ApiClient.Deserialize(response, typeof(List<string>)));
+            
+        }
+    
+        /// <summary>
+        /// Returns list of stores which user can sign in 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns>Task of List&lt;string&gt;</returns>
+        public async System.Threading.Tasks.Task<List<string>> StoreModuleGetUserAllowedStoresAsync (string userId)
+        {
+             ApiResponse<List<string>> response = await StoreModuleGetUserAllowedStoresAsyncWithHttpInfo(userId);
+             return response.Data;
+
+        }
+
+        /// <summary>
+        /// Returns list of stores which user can sign in 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns>Task of ApiResponse (List&lt;string&gt;)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<List<string>>> StoreModuleGetUserAllowedStoresAsyncWithHttpInfo (string userId)
+        {
+            // verify the required parameter 'userId' is set
+            if (userId == null) throw new ApiException(400, "Missing required parameter 'userId' when calling StoreModuleGetUserAllowedStores");
+            
+    
+            var path_ = "/api/stores/allowed/{userId}";
+    
+            var pathParams = new Dictionary<String, String>();
+            var queryParams = new Dictionary<String, String>();
+            var headerParams = new Dictionary<String, String>(Configuration.DefaultHeader);
+            var formParams = new Dictionary<String, String>();
+            var fileParams = new Dictionary<String, FileParameter>();
+            Object postBody = null;
+
+            // to determine the Content-Type header
+            String[] httpContentTypes = new String[] {
+                
+            };
+            String httpContentType = Configuration.ApiClient.SelectHeaderContentType(httpContentTypes);
+
+            // to determine the Accept header
+            String[] httpHeaderAccepts = new String[] {
+                "application/json", "text/json"
+            };
+            String httpHeaderAccept = Configuration.ApiClient.SelectHeaderAccept(httpHeaderAccepts);
+            if (httpHeaderAccept != null)
+                headerParams.Add("Accept", httpHeaderAccept);
+
+            // set "format" to json by default
+            // e.g. /pet/{petId}.{format} becomes /pet/{petId}.json
+            pathParams.Add("format", "json");
+            if (userId != null) pathParams.Add("userId", Configuration.ApiClient.ParameterToString(userId)); // path parameter
+            
+            
+            
+            
+            
+
+            
+
+            // make the HTTP request
+            IRestResponse response = (IRestResponse) await Configuration.ApiClient.CallApiAsync(path_, 
+                Method.GET, queryParams, postBody, headerParams, formParams, fileParams, 
+                pathParams, httpContentType);
+
+            int statusCode = (int) response.StatusCode;
+ 
+            if (statusCode >= 400)
+                throw new ApiException (statusCode, "Error calling StoreModuleGetUserAllowedStores: " + response.Content, response.Content);
+            else if (statusCode == 0)
+                throw new ApiException (statusCode, "Error calling StoreModuleGetUserAllowedStores: " + response.ErrorMessage, response.ErrorMessage);
+
+            return new ApiResponse<List<string>>(statusCode,
+                response.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
+                (List<string>) Configuration.ApiClient.Deserialize(response, typeof(List<string>)));
+            
+        }
+        
+        /// <summary>
         /// Search stores 
         /// </summary>
         /// <param name="criteria"></param> 
@@ -1436,6 +1673,171 @@ namespace VirtoCommerce.Client.Api
             return new ApiResponse<VirtoCommerceStoreModuleWebModelStore>(statusCode,
                 response.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
                 (VirtoCommerceStoreModuleWebModelStore) Configuration.ApiClient.Deserialize(response, typeof(VirtoCommerceStoreModuleWebModelStore)));
+            
+        }
+        
+        /// <summary>
+        /// Check if given contact has login on behalf permission 
+        /// </summary>
+        /// <param name="storeId">Store ID</param> 
+        /// <param name="id">Contact ID</param> 
+        /// <returns>VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo</returns>
+        public VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo StoreModuleGetLoginOnBehalfInfo (string storeId, string id)
+        {
+             ApiResponse<VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo> response = StoreModuleGetLoginOnBehalfInfoWithHttpInfo(storeId, id);
+             return response.Data;
+        }
+
+        /// <summary>
+        /// Check if given contact has login on behalf permission 
+        /// </summary>
+        /// <param name="storeId">Store ID</param> 
+        /// <param name="id">Contact ID</param> 
+        /// <returns>ApiResponse of VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo</returns>
+        public ApiResponse< VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo > StoreModuleGetLoginOnBehalfInfoWithHttpInfo (string storeId, string id)
+        {
+            
+            // verify the required parameter 'storeId' is set
+            if (storeId == null)
+                throw new ApiException(400, "Missing required parameter 'storeId' when calling StoreModuleApi->StoreModuleGetLoginOnBehalfInfo");
+            
+            // verify the required parameter 'id' is set
+            if (id == null)
+                throw new ApiException(400, "Missing required parameter 'id' when calling StoreModuleApi->StoreModuleGetLoginOnBehalfInfo");
+            
+    
+            var path_ = "/api/stores/{storeId}/accounts/{id}/loginonbehalf";
+    
+            var pathParams = new Dictionary<String, String>();
+            var queryParams = new Dictionary<String, String>();
+            var headerParams = new Dictionary<String, String>(Configuration.DefaultHeader);
+            var formParams = new Dictionary<String, String>();
+            var fileParams = new Dictionary<String, FileParameter>();
+            Object postBody = null;
+
+            // to determine the Content-Type header
+            String[] httpContentTypes = new String[] {
+                
+            };
+            String httpContentType = Configuration.ApiClient.SelectHeaderContentType(httpContentTypes);
+
+            // to determine the Accept header
+            String[] httpHeaderAccepts = new String[] {
+                "application/json", "text/json"
+            };
+            String httpHeaderAccept = Configuration.ApiClient.SelectHeaderAccept(httpHeaderAccepts);
+            if (httpHeaderAccept != null)
+                headerParams.Add("Accept", httpHeaderAccept);
+
+            // set "format" to json by default
+            // e.g. /pet/{petId}.{format} becomes /pet/{petId}.json
+            pathParams.Add("format", "json");
+            if (storeId != null) pathParams.Add("storeId", Configuration.ApiClient.ParameterToString(storeId)); // path parameter
+            if (id != null) pathParams.Add("id", Configuration.ApiClient.ParameterToString(id)); // path parameter
+            
+            
+            
+            
+            
+
+            
+    
+            // make the HTTP request
+            IRestResponse response = (IRestResponse) Configuration.ApiClient.CallApi(path_, 
+                Method.GET, queryParams, postBody, headerParams, formParams, fileParams,
+                pathParams, httpContentType);
+
+            int statusCode = (int) response.StatusCode;
+    
+            if (statusCode >= 400)
+                throw new ApiException (statusCode, "Error calling StoreModuleGetLoginOnBehalfInfo: " + response.Content, response.Content);
+            else if (statusCode == 0)
+                throw new ApiException (statusCode, "Error calling StoreModuleGetLoginOnBehalfInfo: " + response.ErrorMessage, response.ErrorMessage);
+    
+            return new ApiResponse<VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo>(statusCode,
+                response.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
+                (VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo) Configuration.ApiClient.Deserialize(response, typeof(VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo)));
+            
+        }
+    
+        /// <summary>
+        /// Check if given contact has login on behalf permission 
+        /// </summary>
+        /// <param name="storeId">Store ID</param>
+        /// <param name="id">Contact ID</param>
+        /// <returns>Task of VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo</returns>
+        public async System.Threading.Tasks.Task<VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo> StoreModuleGetLoginOnBehalfInfoAsync (string storeId, string id)
+        {
+             ApiResponse<VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo> response = await StoreModuleGetLoginOnBehalfInfoAsyncWithHttpInfo(storeId, id);
+             return response.Data;
+
+        }
+
+        /// <summary>
+        /// Check if given contact has login on behalf permission 
+        /// </summary>
+        /// <param name="storeId">Store ID</param>
+        /// <param name="id">Contact ID</param>
+        /// <returns>Task of ApiResponse (VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo)</returns>
+        public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo>> StoreModuleGetLoginOnBehalfInfoAsyncWithHttpInfo (string storeId, string id)
+        {
+            // verify the required parameter 'storeId' is set
+            if (storeId == null) throw new ApiException(400, "Missing required parameter 'storeId' when calling StoreModuleGetLoginOnBehalfInfo");
+            // verify the required parameter 'id' is set
+            if (id == null) throw new ApiException(400, "Missing required parameter 'id' when calling StoreModuleGetLoginOnBehalfInfo");
+            
+    
+            var path_ = "/api/stores/{storeId}/accounts/{id}/loginonbehalf";
+    
+            var pathParams = new Dictionary<String, String>();
+            var queryParams = new Dictionary<String, String>();
+            var headerParams = new Dictionary<String, String>(Configuration.DefaultHeader);
+            var formParams = new Dictionary<String, String>();
+            var fileParams = new Dictionary<String, FileParameter>();
+            Object postBody = null;
+
+            // to determine the Content-Type header
+            String[] httpContentTypes = new String[] {
+                
+            };
+            String httpContentType = Configuration.ApiClient.SelectHeaderContentType(httpContentTypes);
+
+            // to determine the Accept header
+            String[] httpHeaderAccepts = new String[] {
+                "application/json", "text/json"
+            };
+            String httpHeaderAccept = Configuration.ApiClient.SelectHeaderAccept(httpHeaderAccepts);
+            if (httpHeaderAccept != null)
+                headerParams.Add("Accept", httpHeaderAccept);
+
+            // set "format" to json by default
+            // e.g. /pet/{petId}.{format} becomes /pet/{petId}.json
+            pathParams.Add("format", "json");
+            if (storeId != null) pathParams.Add("storeId", Configuration.ApiClient.ParameterToString(storeId)); // path parameter
+            if (id != null) pathParams.Add("id", Configuration.ApiClient.ParameterToString(id)); // path parameter
+            
+            
+            
+            
+            
+
+            
+
+            // make the HTTP request
+            IRestResponse response = (IRestResponse) await Configuration.ApiClient.CallApiAsync(path_, 
+                Method.GET, queryParams, postBody, headerParams, formParams, fileParams, 
+                pathParams, httpContentType);
+
+            int statusCode = (int) response.StatusCode;
+ 
+            if (statusCode >= 400)
+                throw new ApiException (statusCode, "Error calling StoreModuleGetLoginOnBehalfInfo: " + response.Content, response.Content);
+            else if (statusCode == 0)
+                throw new ApiException (statusCode, "Error calling StoreModuleGetLoginOnBehalfInfo: " + response.ErrorMessage, response.ErrorMessage);
+
+            return new ApiResponse<VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo>(statusCode,
+                response.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
+                (VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo) Configuration.ApiClient.Deserialize(response, typeof(VirtoCommerceStoreModuleWebModelLoginOnBehalfInfo)));
             
         }
         

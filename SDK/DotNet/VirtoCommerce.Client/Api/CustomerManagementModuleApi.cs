@@ -143,7 +143,7 @@ namespace VirtoCommerce.Client.Api
         /// <remarks>
         /// 
         /// </remarks>
-        /// <param name="id">Contact id</param>
+        /// <param name="id">Contact ID</param>
         /// <returns>VirtoCommerceCustomerModuleWebModelContact</returns>
         VirtoCommerceCustomerModuleWebModelContact CustomerModuleGetContactById (string id);
   
@@ -153,7 +153,7 @@ namespace VirtoCommerce.Client.Api
         /// <remarks>
         /// 
         /// </remarks>
-        /// <param name="id">Contact id</param>
+        /// <param name="id">Contact ID</param>
         /// <returns>ApiResponse of VirtoCommerceCustomerModuleWebModelContact</returns>
         ApiResponse<VirtoCommerceCustomerModuleWebModelContact> CustomerModuleGetContactByIdWithHttpInfo (string id);
 
@@ -163,7 +163,7 @@ namespace VirtoCommerce.Client.Api
         /// <remarks>
         /// 
         /// </remarks>
-        /// <param name="id">Contact id</param>
+        /// <param name="id">Contact ID</param>
         /// <returns>Task of VirtoCommerceCustomerModuleWebModelContact</returns>
         System.Threading.Tasks.Task<VirtoCommerceCustomerModuleWebModelContact> CustomerModuleGetContactByIdAsync (string id);
 
@@ -173,7 +173,7 @@ namespace VirtoCommerce.Client.Api
         /// <remarks>
         /// 
         /// </remarks>
-        /// <param name="id">Contact id</param>
+        /// <param name="id">Contact ID</param>
         /// <returns>Task of ApiResponse (VirtoCommerceCustomerModuleWebModelContact)</returns>
         System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCustomerModuleWebModelContact>> CustomerModuleGetContactByIdAsyncWithHttpInfo (string id);
         
@@ -952,7 +952,7 @@ namespace VirtoCommerce.Client.Api
         /// <summary>
         /// Get contact 
         /// </summary>
-        /// <param name="id">Contact id</param> 
+        /// <param name="id">Contact ID</param> 
         /// <returns>VirtoCommerceCustomerModuleWebModelContact</returns>
         public VirtoCommerceCustomerModuleWebModelContact CustomerModuleGetContactById (string id)
         {
@@ -963,7 +963,7 @@ namespace VirtoCommerce.Client.Api
         /// <summary>
         /// Get contact 
         /// </summary>
-        /// <param name="id">Contact id</param> 
+        /// <param name="id">Contact ID</param> 
         /// <returns>ApiResponse of VirtoCommerceCustomerModuleWebModelContact</returns>
         public ApiResponse< VirtoCommerceCustomerModuleWebModelContact > CustomerModuleGetContactByIdWithHttpInfo (string id)
         {
@@ -1029,7 +1029,7 @@ namespace VirtoCommerce.Client.Api
         /// <summary>
         /// Get contact 
         /// </summary>
-        /// <param name="id">Contact id</param>
+        /// <param name="id">Contact ID</param>
         /// <returns>Task of VirtoCommerceCustomerModuleWebModelContact</returns>
         public async System.Threading.Tasks.Task<VirtoCommerceCustomerModuleWebModelContact> CustomerModuleGetContactByIdAsync (string id)
         {
@@ -1041,7 +1041,7 @@ namespace VirtoCommerce.Client.Api
         /// <summary>
         /// Get contact 
         /// </summary>
-        /// <param name="id">Contact id</param>
+        /// <param name="id">Contact ID</param>
         /// <returns>Task of ApiResponse (VirtoCommerceCustomerModuleWebModelContact)</returns>
         public async System.Threading.Tasks.Task<ApiResponse<VirtoCommerceCustomerModuleWebModelContact>> CustomerModuleGetContactByIdAsyncWithHttpInfo (string id)
         {

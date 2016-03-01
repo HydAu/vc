@@ -5,6 +5,7 @@ using CacheManager.Core;
 using VirtoCommerce.Client.Api;
 using VirtoCommerce.Client.Model;
 using VirtoCommerce.LiquidThemeEngine.Extensions;
+using VirtoCommerce.Storefront.Common;
 using VirtoCommerce.Storefront.Converters;
 using VirtoCommerce.Storefront.Model;
 using VirtoCommerce.Storefront.Model.Common;
@@ -14,24 +15,27 @@ using VirtoCommerce.Storefront.Model.Customer.Services;
 using VirtoCommerce.Storefront.Model.Order;
 using VirtoCommerce.Storefront.Model.Order.Events;
 using VirtoCommerce.Storefront.Model.Quote;
+using VirtoCommerce.Storefront.Model.Quote.Events;
 
 namespace VirtoCommerce.Storefront.Services
 {
-    public class CustomerServiceImpl : ICustomerService, IAsyncObserver<OrderPlacedEvent>
+    public class CustomerServiceImpl : ICustomerService, IAsyncObserver<OrderPlacedEvent>, IAsyncObserver<QuoteRequestUpdatedEvent>
     {
         private readonly ICustomerManagementModuleApi _customerApi;
         private readonly IOrderModuleApi _orderApi;
         private readonly Func<WorkContext> _workContextFactory;
         private readonly IQuoteModuleApi _quoteApi;
+        private readonly IStoreModuleApi _storeApi;
         private readonly ICacheManager<object> _cacheManager;
 
         public CustomerServiceImpl(Func<WorkContext> workContextFactory, ICustomerManagementModuleApi customerApi, IOrderModuleApi orderApi,
-                                   IQuoteModuleApi quoteApi, ICacheManager<object> cacheManager)
+                                   IQuoteModuleApi quoteApi, IStoreModuleApi storeApi, ICacheManager<object> cacheManager)
         {
             _workContextFactory = workContextFactory;
             _customerApi = customerApi;
             _orderApi = orderApi;
             _quoteApi = quoteApi;
+            _storeApi = storeApi;
             _cacheManager = cacheManager;
         }
 
@@ -82,6 +86,15 @@ namespace VirtoCommerce.Storefront.Services
 
                 return result;
             });
+
+            if (retVal != null)
+            {
+                var clone = retVal.JsonClone();
+                clone.Orders = retVal.Orders;
+                clone.QuoteRequests = retVal.QuoteRequests;
+                retVal = clone;
+            }
+
             return retVal;
         }
 
@@ -97,25 +110,60 @@ namespace VirtoCommerce.Storefront.Services
             await _customerApi.CustomerModuleUpdateContactAsync(contact);
             _cacheManager.Remove(GetCacheKey(customer.Id), "ApiRegion");
         }
+
+        public async Task<bool> CanLoginOnBehalfAsync(string storeId, string customerId)
+        {
+            var info = await _storeApi.StoreModuleGetLoginOnBehalfInfoAsync(storeId, customerId);
+            return info.CanLoginOnBehalf == true;
+        }
         #endregion
 
         #region IObserver<CreateOrderEvent> Members
-        public Task OnNextAsync(OrderPlacedEvent value)
+        public async Task OnNextAsync(OrderPlacedEvent eventArgs)
         {
-            if (value.Order != null)
+            if (eventArgs.Order != null)
             {
-                var cacheKey = GetCacheKey(value.Order.CustomerId);
+                //Invalidate cache
+                var cacheKey = GetCacheKey(eventArgs.Order.CustomerId);
                 _cacheManager.Remove(cacheKey, "ApiRegion");
+
+                var workContext = _workContextFactory();
+                //Add addresses to contact profile
+                if (workContext.CurrentCustomer.IsRegisteredUser)
+                {
+                    workContext.CurrentCustomer.Addresses.AddRange(eventArgs.Order.Addresses);
+                    workContext.CurrentCustomer.Addresses.AddRange(eventArgs.Order.Shipments.Select(x => x.DeliveryAddress));
+
+                    foreach (var address in workContext.CurrentCustomer.Addresses)
+                    {
+                        address.Name = string.Format("{0} {1}", address.FirstName, address.LastName);
+                    }
+
+                    await UpdateCustomerAsync(workContext.CurrentCustomer);
+                }
+
             }
-            return Task.Factory.StartNew(() => { });
         }
         #endregion
 
-        private string GetCacheKey(string customerId)
+        #region IAsyncObserver<QuoteRequestUpdatedEvent> Members
+
+        public Task OnNextAsync(QuoteRequestUpdatedEvent quoteRequestCreatedEvent)
+        {
+            if (quoteRequestCreatedEvent.QuoteRequest != null)
+            {
+                var cacheKey = GetCacheKey(quoteRequestCreatedEvent.QuoteRequest.CustomerId);
+                _cacheManager.Remove(cacheKey, "ApiRegion");
+            }
+
+            return Task.Factory.StartNew(() => { });
+        }
+
+        #endregion
+
+        private static string GetCacheKey(string customerId)
         {
             return "GetCustomerById-" + customerId;
         }
-
-
     }
 }
