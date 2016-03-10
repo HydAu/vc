@@ -35,7 +35,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Xml" />
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\packages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
@@ -78,6 +87,18 @@
     <ProjectReference Include="..\..\..\..\Tests\VirtoCommerce.Platform.Tests\VirtoCommerce.Platform.Tests.csproj">
       <Project>{a3b5ec9f-a1c9-43fe-8fc9-e11bbacf31bd}</Project>
       <Name>VirtoCommerce.Platform.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\VirtoCommerce.Platform.Core\VirtoCommerce.Platform.Core.csproj">
+      <Project>{f7c9313b-522e-4619-abc9-8c7d4600d6b5}</Project>
+      <Name>VirtoCommerce.Platform.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\VirtoCommerce.Platform.Data\VirtoCommerce.Platform.Data.csproj">
+      <Project>{39afd233-b2f7-4178-817d-0a339c57525d}</Project>
+      <Name>VirtoCommerce.Platform.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Cart\VirtoCommerce.CartModule.Data\VirtoCommerce.CartModule.Data.csproj">
+      <Project>{79f334bd-425e-409c-af6a-5ed95320d228}</Project>
+      <Name>VirtoCommerce.CartModule.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\Coupa.PunchoutModule.Web\Coupa.PunchoutModule.Web.csproj">
       <Project>{79ae27d8-da96-46f6-82d7-24a1b9f8f49e}</Project>
