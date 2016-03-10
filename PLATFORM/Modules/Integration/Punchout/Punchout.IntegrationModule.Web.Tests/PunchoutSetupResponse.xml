@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE cXML SYSTEM "http://xml.cxml.org/schemas/cXML/1.1.010/cXML.dtd">
+<cXML version="1.1.007" xml:lang="en-US" payloadID="200303450803006749@b2b.euro.com" timestamp="2003-01-12T08:03:00">
+	<Response>
+		<Status code="200" text="OK" />
+		<PunchOutSetupResponse>
+			<StartPage>
+				<URL>https://mygreatpunchoutsite.com/punchoutLogin.asp</URL>
+			</StartPage>
+		</PunchOutSetupResponse>
+	</Response>
+</cXML>

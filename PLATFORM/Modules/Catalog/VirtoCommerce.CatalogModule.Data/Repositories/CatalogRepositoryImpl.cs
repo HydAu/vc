@@ -358,7 +358,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             }
             if ((respGroup & coreModel.ItemResponseGroup.ItemAssociations) == coreModel.ItemResponseGroup.ItemAssociations)
             {
-                var assosiationGroups = AssociationGroups.Include(x => x.Associations).ToArray();
+                var assosiationGroups = AssociationGroups.Include(x => x.Associations).Where(y => itemIds.Contains(y.ItemId)).ToArray();
                 var assosiatedItemIds = assosiationGroups.SelectMany(x => x.Associations).Select(x => x.ItemId).Distinct().ToArray();
                 var assosiationItems = GetItemByIds(assosiatedItemIds, coreModel.ItemResponseGroup.ItemInfo);
             }

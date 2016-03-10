@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<module>
+	<id>Coupa</id>
+	<version>2.8.0</version>
+	<platformVersion>2.8.0</platformVersion>
+	<dependencies>
+		<dependency id="VirtoCommerce.Core" version="2.8.0" />
+	</dependencies>
+
+	<title>Coupa Punchout gateway</title>
+	<description>APIs and UI for Coupa punchout gateway</description>
+	<authors>
+		<author>Virto Commerce</author>
+	</authors>
+	<owners>
+		<owner>Virto Commerce</owner>
+	</owners>
+	<projectUrl>http://virtocommerce.com/</projectUrl>
+	<iconUrl>http://tech.dibspayment.com/sites/tech/files/pictures/LOGO/DIBS/PNG/DIBS_logo_blue_RGB.png</iconUrl>
+	<releaseNotes>First version.</releaseNotes>
+	<copyright>Copyright © 2011-2016 Virto Commerce. All rights reserved</copyright>
+	<tags>coupa punchout gateway</tags>
+
+	<assemblyFile>Coupa.PunchoutModule.Web.dll</assemblyFile>
+	<moduleType>Coupa.PunchoutModule.Web.Module, Coupa.PunchoutModule.Web</moduleType>
+</module>

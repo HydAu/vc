@@ -222,6 +222,9 @@
     <Compile Include="Pricing\Services\IPricingExtensionManager.cs" />
     <Compile Include="Pricing\Services\IPricingService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Punchout\Model\PunchoutGateway.cs" />
+    <Compile Include="Punchout\Services\IPunchoutService.cs" />
+    <Compile Include="Punchout\Services\PunchoutServiceImpl.cs" />
     <Compile Include="Quote\Events\QuoteRequestChangeEvent.cs" />
     <Compile Include="Quote\Model\QuoteAttachment.cs" />
     <Compile Include="Quote\Model\QuoteItem.cs" />
