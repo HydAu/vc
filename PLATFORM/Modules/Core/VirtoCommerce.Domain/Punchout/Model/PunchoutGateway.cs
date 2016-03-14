@@ -10,7 +10,7 @@ namespace VirtoCommerce.Domain.Punchout.Model
             Name = name;
         }
 
-        public string Name { get; }
+        public string Name { get; set; }
 
         public abstract string PunchoutSetup(string request);
 
