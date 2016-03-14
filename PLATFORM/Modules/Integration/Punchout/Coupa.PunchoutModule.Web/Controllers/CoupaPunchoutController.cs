@@ -37,9 +37,9 @@ namespace Coupa.PunchoutModule.Web.Controllers
         }
 
         /// <summary>
-        /// Update shopping cart
+        /// Send shopping cart to coupa system
         /// </summary>
-        /// <param name="cart">Shopping cart model</param>
+        /// <param name="cartId">Shopping cart id</param>
         [HttpGet]
         [Route("ordermessage")]
         [AllowAnonymous]
@@ -49,9 +49,30 @@ namespace Coupa.PunchoutModule.Web.Controllers
             if (punchoutGateways != null && punchoutGateways.Any(x => x.Name.Equals("Coupa", StringComparison.InvariantCultureIgnoreCase)))
             {
                 var coupaGateway = punchoutGateways.First(x => x.Name.Equals("Coupa", StringComparison.InvariantCultureIgnoreCase));
-                var retVal = coupaGateway.PunchoutOrder(cartId);
+                var retVal = coupaGateway.PunchoutOrderMessage(cartId);
                 if (!string.IsNullOrEmpty(retVal))
                     return Ok(retVal);
+            }
+
+            return NotFound();
+        }
+
+        /// <summary>
+        /// Create order by received order data
+        /// </summary>
+        [HttpPost]
+        [Route("createorder")]
+        [AllowAnonymous]
+        public async Task<IHttpActionResult> CreateOrder()
+        {
+            var createOrderRequest = await Request.Content.ReadAsStringAsync();
+            var punchoutGateways = _punchoutService.GetAllPunchoutGateways();
+            if (punchoutGateways != null && punchoutGateways.Any(x => x.Name.Equals("Coupa", StringComparison.InvariantCultureIgnoreCase)))
+            {
+                var coupaGateway = punchoutGateways.First(x => x.Name.Equals("Coupa", StringComparison.InvariantCultureIgnoreCase));
+                var response = coupaGateway.CreateOrder(createOrderRequest);
+
+                return Ok(response);
             }
 
             return NotFound();

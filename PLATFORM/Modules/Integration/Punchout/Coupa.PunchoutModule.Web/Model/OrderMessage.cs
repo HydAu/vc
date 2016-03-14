@@ -401,6 +401,7 @@
         }
 
         /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("ItemIn")]
         public cXMLMessagePunchOutOrderMessageItemIn[] ItemIn
         {
             get

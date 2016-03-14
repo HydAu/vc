@@ -111,8 +111,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\CoupaPunchoutController.cs" />
+    <Compile Include="Converter\AddressConverter.cs" />
+    <Compile Include="Converter\CustomerOrderConverter.cs" />
+    <Compile Include="Converter\LineItemConverter.cs" />
+    <Compile Include="TestControllers\CoupaTestController.cs" />
     <Compile Include="Managers\CoupaPunchoutGateway.cs" />
     <Compile Include="Model\OrderMessage.cs" />
+    <Compile Include="Model\OrderResponse.cs" />
+    <Compile Include="Model\PurchaseOrder.cs" />
     <Compile Include="Model\SetupResponse.cs" />
     <Compile Include="Model\SetupRequest.cs" />
     <Compile Include="Module.cs" />

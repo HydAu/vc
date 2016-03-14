@@ -2,8 +2,11 @@
 using Microsoft.Practices.Unity;
 using System;
 using VirtoCommerce.Domain.Cart.Services;
+using VirtoCommerce.Domain.Catalog.Services;
+using VirtoCommerce.Domain.Order.Services;
 using VirtoCommerce.Domain.Punchout.Model;
 using VirtoCommerce.Domain.Punchout.Services;
+using VirtoCommerce.Domain.Store.Services;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Core.Settings;
 
@@ -29,8 +32,11 @@ namespace Coupa.PunchoutModule.Web
         {
             var settings = _container.Resolve<ISettingsManager>().GetModuleSettings("Coupa");
             var cartService = _container.Resolve<IShoppingCartService>();
+            var orderService = _container.Resolve<ICustomerOrderService>();
+            var storeService = _container.Resolve<IStoreService>();
+            var catalogService = _container.Resolve<ICatalogSearchService>();
 
-            Func<CoupaPunchoutGateway> coupaPunchoutGatewayFactory = () => new CoupaPunchoutGateway("Coupa", cartService)
+            Func<CoupaPunchoutGateway> coupaPunchoutGatewayFactory = () => new CoupaPunchoutGateway("Coupa", cartService, orderService, storeService, catalogService)
             {
                 //Description = "Coupa punchout gateway integration",
                 //LogoUrl = "https://www.coupa.com/success/templates/coupa_succes_tpl/images/coupa.png",

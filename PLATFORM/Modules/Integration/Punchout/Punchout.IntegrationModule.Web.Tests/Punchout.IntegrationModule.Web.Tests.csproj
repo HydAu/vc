@@ -100,6 +100,10 @@
       <Project>{79f334bd-425e-409c-af6a-5ed95320d228}</Project>
       <Name>VirtoCommerce.CartModule.Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Core\VirtoCommerce.Domain\VirtoCommerce.Domain.csproj">
+      <Project>{67c58a78-ddea-4fa3-a969-1cab582918e4}</Project>
+      <Name>VirtoCommerce.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Coupa.PunchoutModule.Web\Coupa.PunchoutModule.Web.csproj">
       <Project>{79ae27d8-da96-46f6-82d7-24a1b9f8f49e}</Project>
       <Name>Coupa.PunchoutModule.Web</Name>
