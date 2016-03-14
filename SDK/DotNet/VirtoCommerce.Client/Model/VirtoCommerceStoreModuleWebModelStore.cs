@@ -233,7 +233,7 @@ namespace VirtoCommerce.Client.Model
         /// Gets or Sets Settings
         /// </summary>
         [DataMember(Name="settings", EmitDefaultValue=false)]
-        public List<VirtoCommercePlatformCoreSettingsSettingEntry> Settings { get; set; }
+        public List<VirtoCommerceStoreModuleWebModelSetting> Settings { get; set; }
   
         
         /// <summary>

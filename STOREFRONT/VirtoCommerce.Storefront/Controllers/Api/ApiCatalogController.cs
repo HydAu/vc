@@ -22,7 +22,7 @@ namespace VirtoCommerce.Storefront.Controllers.Api
         [HttpPost]
         public async Task<ActionResult> SearchProducts(CatalogSearchCriteria searchCriteria)
         {
-            var retVal = await _catalogSearchService.SearchAsync(searchCriteria);
+            var retVal = await _catalogSearchService.SearchProductsAsync(searchCriteria);
             return Json(retVal);
         }
 
