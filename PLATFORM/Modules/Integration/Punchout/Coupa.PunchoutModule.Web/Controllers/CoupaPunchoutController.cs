@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using VirtoCommerce.Domain.Order.Services;
-using VirtoCommerce.Domain.Punchout.Services;
 using System.Linq;
 using System;
+using Coupa.PunchoutModule.Web.Services;
 
 namespace Coupa.PunchoutModule.Web.Controllers
 {
@@ -37,9 +36,9 @@ namespace Coupa.PunchoutModule.Web.Controllers
         }
 
         /// <summary>
-        /// Send quote to coupa system
+        /// Send shopping cart to coupa system
         /// </summary>
-        /// <param name="quoteId">Quote request id</param>
+        /// <param name="cartId">Shopping cart id</param>
         [HttpGet]
         [Route("ordermessage")]
         [AllowAnonymous]

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace VirtoCommerce.Domain.Punchout.Services
+namespace Coupa.PunchoutModule.Web.Services
 {
     public class PunchoutServiceImpl : IPunchoutService
 	{

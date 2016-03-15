@@ -1,24 +1,26 @@
-﻿using System;
-using System.Xml.Serialization;
-using VirtoCommerce.Domain.Punchout.Model;
-using System.Text;
-using System.IO;
-using Microsoft.Practices.ObjectBuilder2;
-using System.Collections.Generic;
+﻿using Common.Logging;
 using Coupa.PunchoutModule.Web.Converters;
+using Coupa.PunchoutModule.Web.Model;
+using Microsoft.Practices.ObjectBuilder2;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Xml.Serialization;
+using VirtoCommerce.Domain.Cart.Model;
+using VirtoCommerce.Domain.Cart.Services;
+using VirtoCommerce.Domain.Catalog.Services;
+using VirtoCommerce.Domain.Customer.Model;
+using VirtoCommerce.Domain.Customer.Services;
 using VirtoCommerce.Domain.Order.Services;
-using request = Coupa.PunchoutModule.Web.Model.SetupRequest;
-using response = Coupa.PunchoutModule.Web.Model.SetupResponse;
+using VirtoCommerce.Domain.Store.Model;
+using VirtoCommerce.Domain.Store.Services;
 using orderMessage = Coupa.PunchoutModule.Web.Model.OrderMessage;
 using orderResponse = Coupa.PunchoutModule.Web.Model.OrderResponse;
 using purchaseOrder = Coupa.PunchoutModule.Web.Model.PurchaseOrder;
-using VirtoCommerce.Domain.Store.Services;
-using System.Linq;
-using VirtoCommerce.Domain.Catalog.Services;
-using VirtoCommerce.Domain.Quote.Services;
-using VirtoCommerce.Domain.Customer.Services;
-using VirtoCommerce.Domain.Quote.Model;
-using VirtoCommerce.Domain.Customer.Model;
+using request = Coupa.PunchoutModule.Web.Model.SetupRequest;
+using response = Coupa.PunchoutModule.Web.Model.SetupResponse;
 
 namespace Coupa.PunchoutModule.Web.Managers
 {
@@ -27,32 +29,39 @@ namespace Coupa.PunchoutModule.Web.Managers
         private const string okResponseText = "OK";
         private const string sharedSecretPropertyName = "SharedSecret";
 
-        private readonly IQuoteRequestService _quoteService;
+        private readonly IShoppingCartService _cartService;
         private readonly ICustomerOrderService _orderService;
         private readonly IStoreService _storeService;
         private readonly ICatalogSearchService _catalogSearchService;
         private readonly ICustomerSearchService _customerSearchService;
+        private readonly ILog _logger;
 
-        public CoupaPunchoutGateway(string name, 
-            IQuoteRequestService quoteService, 
+        public CoupaPunchoutGateway(string name,
+            IShoppingCartService cartService, 
             ICustomerOrderService orderService, 
             IStoreService storeService, 
             ICatalogSearchService catalogService, 
-            ICustomerSearchService customerSearchService) :
+            ICustomerSearchService customerSearchService,
+            ILog logger) :
             base(name)
         {
-            _quoteService = quoteService;
+            _cartService = cartService;
             _orderService = orderService;
             _storeService = storeService;
             _catalogSearchService = catalogService;
             _customerSearchService = customerSearchService;
+            _logger = logger;
         }
 
 
         public override string PunchoutSetup(string request)
         {
             if (string.IsNullOrEmpty(request))
-                throw new ArgumentNullException("request");
+            {
+                var argumentNullException = new ArgumentNullException("request");
+                _logger.Error("Coupa", argumentNullException);
+                throw argumentNullException;
+            }
 
             string response = null;
             request.cXML requestObject;
@@ -67,54 +76,60 @@ namespace Coupa.PunchoutModule.Web.Managers
 
             if (requestObject != null)
             {
-                var contact = CheckSharedSecret(requestObject);
+                _logger.InfoFormat("Timestamp: {0}, From: {1}, payloadId: {2}", requestObject.timestamp, requestObject.Header.From.Credential.Identity, requestObject.payloadID);
+
+                var contact = GetCustomer(requestObject);
 
                 if (contact != null)
                 {
                     var responseObject = GenerateStartPageResponse(requestObject, contact);
 
+                    _logger.InfoFormat("Timestamp: {0}, Url: {1}, payloadId: {2}", responseObject.timestamp, responseObject.Response.PunchOutSetupResponse.StartPage.URL, responseObject.payloadID);
+
                     if (responseObject != null)
                     {
-                        using (MemoryStream stream = new MemoryStream())
-                        using (StreamWriter writer = new StreamWriter(stream))
-                        {
-                            XmlSerializer xml = new XmlSerializer(typeof(response.cXML));
-                            xml.Serialize(writer, responseObject);
-
-                            response = Encoding.UTF8.GetString(stream.ToArray());
-                        }
+                        response = Serialize(responseObject);
                     }
                 }
                 else
                 {
-                    var responseObject = GenerateResponse(400, "Request rejected", "Could not find customer with the provided shared secret key");
+                    _logger.Error("Coupa: could not deserialized request");
+                    var responseObject = GenerateResponse(400, "Request rejected", requestObject.payloadID, requestObject.lang, "Could not find customer with the provided shared secret key");
+
+                    if (responseObject != null)
+                    {
+                        response = Serialize(responseObject);
+                    }
                 }
+            }
+            else
+            {
+                _logger.ErrorFormat("Coupa: could not deserialize request: {0}", request);
             }
 
             return response;
         }
 
-        public override string PunchoutOrderMessage(string quoteId)
+        public override string PunchoutOrderMessage(string cartId)
         {
             string response = null;
 
-            var quote = _quoteService.GetByIds(quoteId).FirstOrDefault();
+            var cart = _cartService.GetById(cartId);
 
-            if (quote != null)
+            if (cart != null)
             {
-                var orderMessageObject = GenerateOrderMessage(quote);
+                var orderMessageObject = GenerateOrderMessage(cart);
+
+                _logger.InfoFormat("Timestamp: {0}, Cart number: {1}, payloadId: {2}", orderMessageObject.timestamp, cart.Id, orderMessageObject.payloadID);
 
                 if (orderMessageObject != null)
                 {
-                    using (MemoryStream stream = new MemoryStream())
-                    using (StreamWriter writer = new StreamWriter(stream))
-                    {
-                        XmlSerializer xml = new XmlSerializer(typeof(orderMessage.cXML));
-                        xml.Serialize(writer, orderMessageObject);
-
-                        response = Encoding.UTF8.GetString(stream.ToArray());
-                    }
+                    response = Serialize(orderMessageObject);
                 }
+            }
+            else
+            {
+                _logger.ErrorFormat("Cart not found: {0}", cartId);
             }
 
             return response;
@@ -147,48 +162,58 @@ namespace Coupa.PunchoutModule.Web.Managers
 
                     if (resultOrder != null)
                     {
-                        var responseObject = GenerateResponse(200, okResponseText);
+                        var responseObject = GenerateResponse(200, okResponseText, requestObject.payloadID, requestObject.lang);
 
                         if (responseObject != null)
                         {
-                            using (MemoryStream stream = new MemoryStream())
-                            using (StreamWriter writer = new StreamWriter(stream))
-                            {
-                                XmlSerializer xml = new XmlSerializer(typeof(orderResponse.cXML));
-                                xml.Serialize(writer, responseObject);
-
-                                response = Encoding.UTF8.GetString(stream.ToArray());
-                            }
+                            response = Serialize(responseObject);
                         }
                     }
                     else
                     {
-                        var responseObject = GenerateResponse(400, "Order Rejected", "Could not create order from the provided order data");
+                        var responseObject = GenerateResponse(400, "Order Rejected", requestObject.payloadID, requestObject.lang, "Could not create order from the provided order data");
 
                         if (responseObject != null)
                         {
-                            using (MemoryStream stream = new MemoryStream())
-                            using (StreamWriter writer = new StreamWriter(stream))
-                            {
-                                XmlSerializer xml = new XmlSerializer(typeof(orderMessage.cXML));
-                                xml.Serialize(writer, responseObject);
-
-                                response = Encoding.UTF8.GetString(stream.ToArray());
-                            }
+                            response = Serialize(responseObject);
                         }
                     }
                 }
+            }
+            else
+            {
+                _logger.ErrorFormat("Coupa: could not deserialize request: {0}", customerOrderRequest);
             }
 
             return response;
         }
 
-        private orderResponse.cXML GenerateResponse(uint code, string text, string errorMessage = null)
+        private string Serialize(object toSerialize)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            using (StreamWriter writer = new StreamWriter(stream))
+            {
+                XmlSerializer xml = new XmlSerializer(toSerialize.GetType());
+                xml.Serialize(writer, toSerialize);
+
+                return Encoding.UTF8.GetString(stream.ToArray());
+            }
+        }
+        /// <summary>
+        /// Generate response to the request
+        /// </summary>
+        /// <param name="code">Response code</param>
+        /// <param name="text">Response text. Example: "OK"</param>
+        /// <param name="payloadId">Payload id</param>
+        /// <param name="locale">Language code. Example: "en-US"</param>
+        /// <param name="errorMessage">Error description text for error response</param>
+        /// <returns></returns>
+        private orderResponse.cXML GenerateResponse(uint code, string text, string payloadId, string locale, string errorMessage = null)
         {
             var orderResponse = new orderResponse.cXML();
 
-            orderResponse.lang = "en-US";
-            orderResponse.payloadID = "200303450803006749@b2b.euro.com";
+            orderResponse.lang = locale;
+            orderResponse.payloadID = payloadId;
             orderResponse.timestamp = DateTime.UtcNow;
 
             var requestResponse = new orderResponse.cXMLResponse();
@@ -202,14 +227,26 @@ namespace Coupa.PunchoutModule.Web.Managers
             return orderResponse;
         }
 
-        private response.cXML GenerateStartPageResponse(request.cXML request, Contact customer)
+        /// <summary>
+        /// generates response with start page URL
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="contact"></param>
+        /// <returns></returns>
+        private response.cXML GenerateStartPageResponse(request.cXML request, Contact contact)
         {
+            var punchoutStore = GetPunchoutStore(contact);
+
             var responseObject = new response.cXML();
 
+            //version static?
             responseObject.version = "1.1.007";
             responseObject.timestamp = DateTime.UtcNow;
-            responseObject.payloadID = "200303450803006749@b2b.euro.com";
-            responseObject.lang = "en-US";
+            
+            responseObject.payloadID = request.payloadID;
+
+            //TODO set language dynamically
+            responseObject.lang = punchoutStore.DefaultLanguage;
 
             var requestResponse = new response.cXMLResponse();
 
@@ -217,17 +254,16 @@ namespace Coupa.PunchoutModule.Web.Managers
             requestResponse.Status = status;
 
             var setupResponse = new response.cXMLResponsePunchOutSetupResponse();
-            var startPage = new response.cXMLResponsePunchOutSetupResponseStartPage { URL = GetPunchoutUrl() };
+            var startPage = new response.cXMLResponsePunchOutSetupResponseStartPage { URL = punchoutStore.Url };
             setupResponse.StartPage = startPage;
 
             requestResponse.PunchOutSetupResponse = setupResponse;
-
             responseObject.Response = requestResponse;
 
             return responseObject;
         }
 
-        private orderMessage.cXML GenerateOrderMessage(QuoteRequest quote)
+        private orderMessage.cXML GenerateOrderMessage(ShoppingCart cart)
         {
             var orderMessage = new orderMessage.cXML();
 
@@ -255,14 +291,14 @@ namespace Coupa.PunchoutModule.Web.Managers
 
             #region Message header
 
-            var punchoutMoney = new orderMessage.cXMLMessagePunchOutOrderMessagePunchOutOrderMessageHeaderTotalMoney { currency = quote.Currency, Value = quote.Totals.GrandTotalInclTax };
+            var punchoutMoney = new orderMessage.cXMLMessagePunchOutOrderMessagePunchOutOrderMessageHeaderTotalMoney { currency = cart.Currency, Value = cart.Total };
             var punchoutTotal = new orderMessage.cXMLMessagePunchOutOrderMessagePunchOutOrderMessageHeaderTotal { Money = punchoutMoney };
 
-            var shippingMoney = new orderMessage.cXMLMessagePunchOutOrderMessagePunchOutOrderMessageHeaderShippingMoney { currency = quote.Currency, Value = quote.Totals.ShippingTotal };
+            var shippingMoney = new orderMessage.cXMLMessagePunchOutOrderMessagePunchOutOrderMessageHeaderShippingMoney { currency = cart.Currency, Value = cart.ShippingTotal };
             var shippingDescription = new orderMessage.cXMLMessagePunchOutOrderMessagePunchOutOrderMessageHeaderShippingDescription { lang = "en-US", Value = "Unknown" };
             var shippingOrderMessageHeader = new orderMessage.cXMLMessagePunchOutOrderMessagePunchOutOrderMessageHeaderShipping { Money = shippingMoney, Description = shippingDescription };
 
-            var taxMoney = new orderMessage.cXMLMessagePunchOutOrderMessagePunchOutOrderMessageHeaderTaxMoney { currency = quote.Currency, Value = quote.Totals.TaxTotal };
+            var taxMoney = new orderMessage.cXMLMessagePunchOutOrderMessagePunchOutOrderMessageHeaderTaxMoney { currency = cart.Currency, Value = cart.TaxTotal };
             var taxDescription = new orderMessage.cXMLMessagePunchOutOrderMessagePunchOutOrderMessageHeaderTaxDescription { lang = "en-US", Value = "Unknown" };
             var taxOrderMessageHeader = new orderMessage.cXMLMessagePunchOutOrderMessagePunchOutOrderMessageHeaderTax { Money = taxMoney, Description = taxDescription };
 
@@ -280,18 +316,18 @@ namespace Coupa.PunchoutModule.Web.Managers
 
             var items = new List<orderMessage.cXMLMessagePunchOutOrderMessageItemIn>();
 
-            quote.Items.ForEach(item =>
+            cart.Items.ForEach(item =>
             {
                 var itemId = new orderMessage.cXMLMessagePunchOutOrderMessageItemInItemID { SupplierPartID = item.Sku };
 
                 var description = new orderMessage.cXMLMessagePunchOutOrderMessageItemInItemDetailDescription { lang = "en-US", Value = item.Name };
 
-                var unitPriceMoney = new orderMessage.cXMLMessagePunchOutOrderMessageItemInItemDetailUnitPriceMoney { currency = quote.Currency, Value = item.SelectedTierPrice.Price };
+                var unitPriceMoney = new orderMessage.cXMLMessagePunchOutOrderMessageItemInItemDetailUnitPriceMoney { currency = cart.Currency, Value = item.PlacedPrice };
                 var unitPrice = new orderMessage.cXMLMessagePunchOutOrderMessageItemInItemDetailUnitPrice { Money = unitPriceMoney };
 
                 var itemDetail = new orderMessage.cXMLMessagePunchOutOrderMessageItemInItemDetail { UnitPrice = unitPrice, Description = description, LeadTime = 0 };
 
-                var itemIn = new orderMessage.cXMLMessagePunchOutOrderMessageItemIn { ItemID = itemId, quantity = (byte) item.SelectedTierPrice.Quantity, ItemDetail = itemDetail };
+                var itemIn = new orderMessage.cXMLMessagePunchOutOrderMessageItemIn { ItemID = itemId, quantity = (byte)item.Quantity, ItemDetail = itemDetail };
                 items.Add(itemIn);
             });
 
@@ -317,19 +353,20 @@ namespace Coupa.PunchoutModule.Web.Managers
             return cookie;
         }
 
-        private string GetPunchoutUrl()
+        private Store GetPunchoutStore(Contact contact)
         {
-            string retVal = null;
+            Store retVal = null;
 
-            //TODO get punchout url
-            retVal = "http://demo.virtocommerce.com";
+            //var storeIds = _storeService.GetUserAllowedStoreIds(new VirtoCommerce.Platform.Core.Security.ApplicationUserExtended { MemberId = contact.Id });
 
+            retVal = _storeService.SearchStores(new VirtoCommerce.Domain.Store.Model.SearchCriteria()).Stores.Where(s => s.StoreState == StoreState.Open).FirstOrDefault();
+            
             return retVal;
         }
 
-        private Contact CheckSharedSecret(request.cXML request)
+        private Contact GetCustomer(request.cXML request)
         {
-            var searchResult = _customerSearchService.Search(new SearchCriteria { Keyword = request.Header.From.Credential.Identity });
+            var searchResult = _customerSearchService.Search(new VirtoCommerce.Domain.Customer.Model.SearchCriteria { Keyword = request.Header.From.Credential.Identity });
 
             if (searchResult != null && searchResult.Contacts != null && searchResult.Contacts.Any())
             {

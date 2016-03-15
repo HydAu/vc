@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using VirtoCommerce.Platform.Core.Settings;
 
-namespace VirtoCommerce.Domain.Punchout.Model
+namespace Coupa.PunchoutModule.Web.Model
 {
     public abstract class PunchoutGateway : IHaveSettings
     {

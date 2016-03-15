@@ -43,6 +43,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Common.Logging, Version=3.1.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Common.Logging.3.1.0\lib\net40\Common.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.1.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\Common.Logging.Core.3.1.0\lib\net40\Common.Logging.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
       <Private>True</Private>
@@ -114,6 +122,9 @@
     <Compile Include="Converter\AddressConverter.cs" />
     <Compile Include="Converter\CustomerOrderConverter.cs" />
     <Compile Include="Converter\LineItemConverter.cs" />
+    <Compile Include="Model\PunchoutGateway.cs" />
+    <Compile Include="Services\IPunchoutService.cs" />
+    <Compile Include="Services\PunchoutServiceImpl.cs" />
     <Compile Include="TestControllers\CoupaTestController.cs" />
     <Compile Include="Managers\CoupaPunchoutGateway.cs" />
     <Compile Include="Model\OrderMessage.cs" />

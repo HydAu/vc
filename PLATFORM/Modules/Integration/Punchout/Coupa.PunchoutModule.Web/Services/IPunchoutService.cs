@@ -1,7 +1,7 @@
-﻿using System;
-using VirtoCommerce.Domain.Punchout.Model;
+﻿using Coupa.PunchoutModule.Web.Model;
+using System;
 
-namespace VirtoCommerce.Domain.Punchout.Services
+namespace Coupa.PunchoutModule.Web.Services
 {
     public interface IPunchoutService
 	{
