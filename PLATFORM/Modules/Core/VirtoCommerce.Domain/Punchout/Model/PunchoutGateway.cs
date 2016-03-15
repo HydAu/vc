@@ -22,7 +22,7 @@ namespace VirtoCommerce.Domain.Punchout.Model
         /// </summary>
         /// <param name="cartId">Cart Id</param>
         /// <returns>Serialized punchout order message</returns>
-        public abstract string PunchoutOrderMessage(string cartId);
+        public abstract string PunchoutOrderMessage(string quoteId);
 
         /// <summary>
         /// Create customer order from the provided serialized order data.
