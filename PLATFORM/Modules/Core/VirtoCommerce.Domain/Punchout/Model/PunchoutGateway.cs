@@ -3,7 +3,7 @@ using VirtoCommerce.Platform.Core.Settings;
 
 namespace VirtoCommerce.Domain.Punchout.Model
 {
-    public abstract class PunchoutGateway: IHaveSettings
+    public abstract class PunchoutGateway : IHaveSettings
     {
         public PunchoutGateway(string name)
         {
@@ -11,6 +11,9 @@ namespace VirtoCommerce.Domain.Punchout.Model
         }
 
         public string Name { get; }
+        public string Description { get; set; }
+        public string LogoUrl { get; set; }
+        public bool IsActive { get; set; }
 
         public abstract string PunchoutSetup(string request);
 

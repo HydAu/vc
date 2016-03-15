@@ -37,9 +37,9 @@ namespace Coupa.PunchoutModule.Web.Controllers
         }
 
         /// <summary>
-        /// Send shopping cart to coupa system
+        /// Send quote to coupa system
         /// </summary>
-        /// <param name="cartId">Shopping cart id</param>
+        /// <param name="quoteId">Quote request id</param>
         [HttpGet]
         [Route("ordermessage")]
         [AllowAnonymous]
