@@ -10,7 +10,7 @@ namespace VirtoCommerce.Domain.Punchout.Model
             Name = name;
         }
 
-        public string Name { get; }
+        public string Name { get; set; }
         public string Description { get; set; }
         public string LogoUrl { get; set; }
         public bool IsActive { get; set; }
