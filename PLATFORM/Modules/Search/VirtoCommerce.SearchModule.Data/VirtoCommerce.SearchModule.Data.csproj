@@ -45,6 +45,10 @@
       <HintPath>..\..\..\packages\Common.Logging.Core.3.1.0\lib\net40\Common.Logging.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Elasticsearch.Net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Elasticsearch.Net.1.7.2\lib\net45\Elasticsearch.Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="EntityFramework">
       <HintPath>..\..\..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -87,6 +91,10 @@
     <Reference Include="Lucene.Net.Contrib.SpellChecker">
       <HintPath>..\..\..\packages\Lucene.Net.Contrib.3.0.3\lib\net40\Lucene.Net.Contrib.SpellChecker.dll</HintPath>
     </Reference>
+    <Reference Include="Nest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\NEST.1.7.2\lib\net45\Nest.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -123,6 +131,8 @@
     <Compile Include="Providers\Azure\AzureSearchQueryBuilder.cs" />
     <Compile Include="Providers\Azure\AzureTypeMapper.cs" />
     <Compile Include="Providers\Azure\StringBuilderExtensions.cs" />
+    <Compile Include="Providers\ElasticsearchNest\NestDocument.cs" />
+    <Compile Include="Providers\ElasticsearchNest\NestProvider.cs" />
     <Compile Include="Services\CatalogItemIndexBuilder.cs" />
     <Compile Include="Providers\ElasticSearch\ElasticClient.cs" />
     <Compile Include="Providers\ElasticSearch\ElasticQueryHelper.cs" />
