@@ -125,6 +125,9 @@ namespace VirtoCommerce.SearchModule.Data.Providers.ElasticSearch
             var facets = GetFacets(criteria);
             builder.Facets(f => facets);
 
+            var aggregations = GetAggregations(criteria);
+            builder.Aggregations(f => aggregations);
+
             return builder;
         }
         #endregion
@@ -181,6 +184,69 @@ namespace VirtoCommerce.SearchModule.Data.Providers.ElasticSearch
                         x.Fields(fields).Operator(Operator.AND).Query(searchPhrase).Analyzer(ElasticSearchProvider.SearchAnalyzer)));
             }
         }
+
+        #region Aggregation Query
+
+        protected virtual Aggregations<ESDocument> GetAggregations(ISearchCriteria criteria)
+        {
+            var result = new Aggregations<ESDocument>();
+
+            // Now add facets
+            var facetParams = new Facets<ESDocument>();
+            foreach (var filter in criteria.Filters)
+            {
+                if (filter is AttributeFilter)
+                {
+                    AddTermsAggregation(result, filter.Key, criteria);
+                }
+                else if (filter is RangeFilter)
+                {
+                    AddFacetQueries(facetParams, filter.Key, ((RangeFilter)filter).Values, criteria);
+                }
+                else if (filter is PriceRangeFilter)
+                {
+                    var currency = ((PriceRangeFilter)filter).Currency;
+                    if (currency.Equals(criteria.Currency, StringComparison.OrdinalIgnoreCase))
+                    {
+                        AddFacetPriceQueries(facetParams, filter.Key, ((PriceRangeFilter)filter).Values, criteria);
+                    }
+                }
+                else if (filter is CategoryFilter)
+                {
+                    AddFacetQueries(facetParams, filter.Key, ((CategoryFilter)filter).Values);
+                }
+            }
+
+            /*
+            var catalogCriteria = criteria as CatalogItemSearchCriteria;
+
+            if (catalogCriteria != null)
+            {
+                AddSubCategoryFacetQueries(facetParams, catalogCriteria);
+            }
+             * */
+
+            return result;
+        }
+
+        private static void AddTermsAggregation(Aggregations<ESDocument> aggregations, string fieldName, ISearchCriteria criteria)
+        {
+            var ffilter = new BoolFilter<ESDocument>();
+            foreach (var f in criteria.CurrentFilters)
+            {
+                if (!f.Key.Equals(fieldName))
+                {
+                    var q = ElasticQueryHelper.CreateQuery(criteria, f);
+                    ffilter.Must(ff => ff.Bool(bb => q));
+                }
+            }
+
+            aggregations
+                .Filter(fa => fa.Filter(f => f.Bool(bf => ffilter)))
+                .Terms(t => t.AggregationName(fieldName.ToLower()).Field(fieldName.ToLower()));
+        }
+
+        #endregion
 
         #region Facet Query
         /// <summary>
