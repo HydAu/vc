@@ -70,7 +70,7 @@ namespace VirtoCommerce.LiquidThemeEngine.Converters
 
             if (workContext.CurrentLinkLists != null)
             {
-                result.Linklists = new Linklists(workContext.CurrentLinkLists.Select(x => x.ToShopifyModel(workContext)));
+                result.Linklists = new Linklists(workContext.CurrentLinkLists.Select(x => x.ToShopifyModel(urlBuilder)));
             }
 
             if (workContext.Pages != null)
@@ -121,6 +121,13 @@ namespace VirtoCommerce.LiquidThemeEngine.Converters
             {
                 result.Notification = workContext.StorefrontNotification.ToShopifyModel();
             }
+
+            result.ExternalLoginProviders = workContext.ExternalLoginProviders.Select(p => new LoginProvider
+            {
+                AuthenticationType = p.AuthenticationType,
+                Caption = p.Caption,
+                Properties = p.Properties
+            }).ToList();
 
             //Powered by link
             if (workContext.CurrentStore != null)
