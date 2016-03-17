@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.Linq;
 using PlainElastic.Net;
 using PlainElastic.Net.Queries;
@@ -208,7 +209,7 @@ namespace VirtoCommerce.SearchModule.Data.Providers.ElasticSearch
                     var currency = ((PriceRangeFilter)filter).Currency;
                     if (currency.Equals(criteria.Currency, StringComparison.OrdinalIgnoreCase))
                     {
-                        AddFacetPriceQueries(facetParams, filter.Key, ((PriceRangeFilter)filter).Values, criteria);
+                        AddPricesAggregation(result, filter.Key, ((PriceRangeFilter)filter).Values, criteria);
                     }
                 }
                 else if (filter is CategoryFilter)
@@ -244,6 +245,35 @@ namespace VirtoCommerce.SearchModule.Data.Providers.ElasticSearch
             aggregations
                 .Filter(fa => fa.Filter(f => f.Bool(bf => ffilter)))
                 .Terms(t => t.AggregationName(fieldName.ToLower()).Field(fieldName.ToLower()));
+        }
+        private void AddPricesAggregation(Aggregations<ESDocument> aggregations, string fieldName, IEnumerable<RangeFilterValue> values, ISearchCriteria criteria)
+        {
+            if (values == null)
+                return;
+
+            var ffilter = new MustFilter<ESDocument>();
+            foreach (var f in criteria.CurrentFilters)
+            {
+                if (!f.Key.Equals(fieldName))
+                {
+                    var q = ElasticQueryHelper.CreateQuery(criteria, f);
+                    ffilter.Bool(ff => q);
+                }
+            }
+
+            foreach (var value in values)
+            {
+                var query = ElasticQueryHelper.CreatePriceRangeFilter(criteria, fieldName, value);
+
+                if (query != null)
+                {
+                    query.Must(b => ffilter);
+                    aggregations
+                        .Filter(fa => fa
+                            .Filter(f => f.Bool(bf => query))
+                            .AggregationName(string.Format(CultureInfo.InvariantCulture, "{0}-{1}", fieldName, value.Id)));
+                }
+            }
         }
 
         #endregion

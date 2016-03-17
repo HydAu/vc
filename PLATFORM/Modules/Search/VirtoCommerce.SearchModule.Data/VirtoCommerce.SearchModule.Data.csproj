@@ -94,8 +94,8 @@
     <Reference Include="Omu.ValueInjecter">
       <HintPath>..\..\..\packages\valueinjecter.2.3.3\lib\net35\Omu.ValueInjecter.dll</HintPath>
     </Reference>
-    <Reference Include="PlainElastic.Net, Version=1.1.54.0, Culture=neutral, PublicKeyToken=0930e76dfc03b7ac, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\PlainElastic.Net.1.1.54\lib\Net40\PlainElastic.Net.dll</HintPath>
+    <Reference Include="PlainElastic.Net, Version=1.1.53.0, Culture=neutral, PublicKeyToken=0930e76dfc03b7ac, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\PlainElastic.Net.1.1.53\lib\Net40\PlainElastic.Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="RedDog.Search">
