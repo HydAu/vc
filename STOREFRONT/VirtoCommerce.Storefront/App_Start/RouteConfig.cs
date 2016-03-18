@@ -43,6 +43,7 @@ namespace VirtoCommerce.Storefront
             //Catalog API
             routes.MapLocalizedStorefrontRoute("API.Catalog.SearchProducts", "storefrontapi/catalog/search", defaults: new { controller = "ApiCatalog", action = "SearchProducts" }, constraints: new { httpMethod = new HttpMethodConstraint(new string[] { "POST" }) });
             routes.MapLocalizedStorefrontRoute("API.Catalog.GetProductsByIds", "storefrontapi/products", defaults: new { controller = "ApiCatalog", action = "GetProductsByIds" });
+            routes.MapLocalizedStorefrontRoute("API.Catalog.SearchCategories", "storefrontapi/categories/search", defaults: new { controller = "ApiCatalog", action = "SearchCategories" }, constraints: new { httpMethod = new HttpMethodConstraint(new string[] { "POST" }) });
             routes.MapLocalizedStorefrontRoute("API.Catalog.GetCategoriesByIds", "storefrontapi/categories", defaults: new { controller = "ApiCatalog", action = "GetCategoriesByIds" });
 
             //Common storefront API
@@ -82,7 +83,8 @@ namespace VirtoCommerce.Storefront
             routes.MapLocalizedStorefrontRoute("Account.ForgotPassword", "account/forgotpassword", defaults: new { controller = "Account", action = "ForgotPassword" });
             routes.MapLocalizedStorefrontRoute("Account.ResetPassword", "account/resetpassword", defaults: new { controller = "Account", action = "ResetPassword" });
             routes.MapLocalizedStorefrontRoute("Account.ChangePassword", "account/password", defaults: new { controller = "Account", action = "ChangePassword" });
-        
+            routes.MapLocalizedStorefrontRoute("Account.ExternalLogin", "account/externallogin", defaults: new { controller = "Account", action = "ExternalLogin" });
+            routes.MapLocalizedStorefrontRoute("Account.ExternalLoginCallback", "account/externallogincallback", defaults: new { controller = "Account", action = "ExternalLoginCallback" });
 
             //Cart
             routes.MapLocalizedStorefrontRoute("Cart.Index", "cart", defaults: new { controller = "Cart", action = "Index" }, constraints: new { httpMethod = new HttpMethodConstraint(new string[] { "GET" }) });
