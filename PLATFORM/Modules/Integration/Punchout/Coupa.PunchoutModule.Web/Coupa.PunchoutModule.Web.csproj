@@ -125,7 +125,6 @@
     <Compile Include="Model\PunchoutGateway.cs" />
     <Compile Include="Services\IPunchoutService.cs" />
     <Compile Include="Services\PunchoutServiceImpl.cs" />
-    <Compile Include="TestControllers\CoupaTestController.cs" />
     <Compile Include="Managers\CoupaPunchoutGateway.cs" />
     <Compile Include="Model\OrderMessage.cs" />
     <Compile Include="Model\OrderResponse.cs" />

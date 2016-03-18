@@ -27,15 +27,15 @@
 			<Extrinsic name="LastName">Halpert</Extrinsic>
 			<Extrinsic name="UniqueName">jim</Extrinsic>
 			<Extrinsic name="UserEmail">noah+jim@coupa.com</Extrinsic>
-				<Extrinsic name="User">jim</Extrinsic>
-				<Extrinsic name="BusinessUnit">COUPA</Extrinsic>
-				<Contact role="endUser">
-					<Name xml:lang="en-US">jim</Name>
-					<Email>noah+jim@coupa.com</Email>
-				</Contact>
-				<BrowserFormPost>
-					<URL>https://qa.coupahost.com/punchout/checkout/4</URL>
-				</BrowserFormPost>
-			</PunchOutSetupRequest>
+			<Extrinsic name="User">jim</Extrinsic>
+			<Extrinsic name="BusinessUnit">COUPA</Extrinsic>
+			<Contact role="endUser">
+				<Name xml:lang="en-US">jim</Name>
+				<Email>noah+jim@coupa.com</Email>
+			</Contact>
+			<BrowserFormPost>
+				<URL>https://qa.coupahost.com/punchout/checkout/4</URL>
+			</BrowserFormPost>
+		</PunchOutSetupRequest>
 	</Request>
 </cXML>

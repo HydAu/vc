@@ -11,10 +11,10 @@ using System.Xml.Serialization;
 using VirtoCommerce.Domain.Cart.Model;
 using VirtoCommerce.Domain.Cart.Services;
 using VirtoCommerce.Domain.Catalog.Services;
-using VirtoCommerce.Domain.Customer.Model;
+using customerModel = VirtoCommerce.Domain.Customer.Model;
 using VirtoCommerce.Domain.Customer.Services;
 using VirtoCommerce.Domain.Order.Services;
-using VirtoCommerce.Domain.Store.Model;
+using storeModel = VirtoCommerce.Domain.Store.Model;
 using VirtoCommerce.Domain.Store.Services;
 using orderMessage = Coupa.PunchoutModule.Web.Model.OrderMessage;
 using orderResponse = Coupa.PunchoutModule.Web.Model.OrderResponse;
@@ -150,7 +150,7 @@ namespace Coupa.PunchoutModule.Web.Managers
 
             if (requestObject != null)
             {
-                //TODO get store by provided data in request (quote id?)
+                //TODO get store by provided data in request (cart id?)
                 var store = _storeService.SearchStores(new VirtoCommerce.Domain.Store.Model.SearchCriteria()).Stores.FirstOrDefault();
                 if (store != null)
                 {
@@ -199,6 +199,7 @@ namespace Coupa.PunchoutModule.Web.Managers
                 return Encoding.UTF8.GetString(stream.ToArray());
             }
         }
+
         /// <summary>
         /// Generate response to the request
         /// </summary>
@@ -233,7 +234,7 @@ namespace Coupa.PunchoutModule.Web.Managers
         /// <param name="request"></param>
         /// <param name="contact"></param>
         /// <returns></returns>
-        private response.cXML GenerateStartPageResponse(request.cXML request, Contact contact)
+        private response.cXML GenerateStartPageResponse(request.cXML request, customerModel.Contact contact)
         {
             var punchoutStore = GetPunchoutStore(contact);
 
@@ -353,20 +354,20 @@ namespace Coupa.PunchoutModule.Web.Managers
             return cookie;
         }
 
-        private Store GetPunchoutStore(Contact contact)
+        private storeModel.Store GetPunchoutStore(customerModel.Contact contact)
         {
-            Store retVal = null;
+            storeModel.Store retVal = null;
 
             //var storeIds = _storeService.GetUserAllowedStoreIds(new VirtoCommerce.Platform.Core.Security.ApplicationUserExtended { MemberId = contact.Id });
 
-            retVal = _storeService.SearchStores(new VirtoCommerce.Domain.Store.Model.SearchCriteria()).Stores.Where(s => s.StoreState == StoreState.Open).FirstOrDefault();
+            retVal = _storeService.SearchStores(new storeModel.SearchCriteria()).Stores.Where(s => s.StoreState == storeModel.StoreState.Open).FirstOrDefault();
             
             return retVal;
         }
 
-        private Contact GetCustomer(request.cXML request)
+        private customerModel.Contact GetCustomer(request.cXML request)
         {
-            var searchResult = _customerSearchService.Search(new VirtoCommerce.Domain.Customer.Model.SearchCriteria { Keyword = request.Header.From.Credential.Identity });
+            var searchResult = _customerSearchService.Search(new customerModel.SearchCriteria { Keyword = request.Header.From.Credential.Identity });
 
             if (searchResult != null && searchResult.Contacts != null && searchResult.Contacts.Any())
             {

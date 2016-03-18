@@ -13,7 +13,7 @@
 
         private string payloadIDField;
 
-        private string timestampField;
+        private System.DateTime timestampField;
 
         private string langField;
 
@@ -59,7 +59,7 @@
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string timestamp
+        public System.DateTime timestamp
         {
             get
             {
