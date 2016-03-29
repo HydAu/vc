@@ -133,6 +133,7 @@
     <Compile Include="Providers\Azure\StringBuilderExtensions.cs" />
     <Compile Include="Providers\ElasticsearchNest\NestDocument.cs" />
     <Compile Include="Providers\ElasticsearchNest\NestProvider.cs" />
+    <Compile Include="Providers\ElasticsearchNest\NestQueryBuilder.cs" />
     <Compile Include="Services\CatalogItemIndexBuilder.cs" />
     <Compile Include="Providers\ElasticSearch\ElasticClient.cs" />
     <Compile Include="Providers\ElasticSearch\ElasticQueryHelper.cs" />

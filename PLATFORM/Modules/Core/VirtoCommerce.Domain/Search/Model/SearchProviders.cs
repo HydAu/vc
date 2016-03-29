@@ -4,6 +4,7 @@
     {
         Lucene,
         Elasticsearch,
+        Nest,
         AzureSearch
     }
 }

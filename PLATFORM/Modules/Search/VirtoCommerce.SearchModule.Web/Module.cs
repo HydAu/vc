@@ -8,6 +8,7 @@ using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Data.Common;
 using VirtoCommerce.SearchModule.Data.Model;
 using VirtoCommerce.SearchModule.Data.Providers.Azure;
+using VirtoCommerce.SearchModule.Data.Providers.ElasticsearchNest;
 using VirtoCommerce.SearchModule.Data.Providers.ElasticSearch;
 using VirtoCommerce.SearchModule.Data.Providers.Lucene;
 using VirtoCommerce.SearchModule.Data.Services;
@@ -56,11 +57,12 @@ namespace VirtoCommerce.SearchModule.Web
 
             var searchProviderManager = _container.Resolve<ISearchProviderManager>();
 
+            searchProviderManager.RegisterSearchProvider(SearchProviders.Nest.ToString(), connection => new NestProvider(new NestQueryBuilder(), connection));
             searchProviderManager.RegisterSearchProvider(SearchProviders.Elasticsearch.ToString(), connection => new ElasticSearchProvider(new ElasticSearchQueryBuilder(), connection));
             searchProviderManager.RegisterSearchProvider(SearchProviders.Lucene.ToString(), connection => new LuceneSearchProvider(new LuceneSearchQueryBuilder(), connection));
             searchProviderManager.RegisterSearchProvider(SearchProviders.AzureSearch.ToString(), connection => new AzureSearchProvider(new AzureSearchQueryBuilder(), connection));
 
-         
+
         }
 
         #endregion

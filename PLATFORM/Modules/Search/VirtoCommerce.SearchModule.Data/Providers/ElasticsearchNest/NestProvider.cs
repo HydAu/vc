@@ -13,9 +13,12 @@ namespace VirtoCommerce.SearchModule.Data.Providers.ElasticsearchNest
 {
     public class NestProvider : ISearchProvider
     {
-        public NestProvider(ISearchQueryBuilder queryBuilder)
+        private readonly ISearchConnection _connection;
+
+        public NestProvider(ISearchQueryBuilder queryBuilder, ISearchConnection connection)
         {
             QueryBuilder = queryBuilder;
+            _connection = connection;
         }
 
         public ISearchQueryBuilder QueryBuilder { get; private set; }
@@ -48,8 +51,8 @@ namespace VirtoCommerce.SearchModule.Data.Providers.ElasticsearchNest
         public ISearchResults Search(string scope, ISearchCriteria criteria)
         {
             var client = new ElasticClient();
-            var query = QueryBuilder.BuildQuery(criteria);
-            var response = client.Search<NestDocument>(s => s.Index(scope).Type(criteria.DocumentType).QueryRaw(query.ToString()));
+            var query = QueryBuilder.BuildQuery(criteria) as QueryDescriptor<NestDocument>;
+            var response = client.Search<NestDocument>(s => s.Index(scope).Type(criteria.DocumentType));
 
             // Parse documents returned
             var docList = new List<IDocument>();
